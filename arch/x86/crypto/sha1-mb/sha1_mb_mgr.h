@@ -78,9 +78,9 @@ struct job_sha1 {
 
 /* typedef uint32_t sha1_digest_array[5][8]; */
 
-struct sha1_args_x8 {
-	uint32_t	digest[5][8];
-	uint8_t		*data_ptr[8];
+struct sha1_args_x16 {
+	uint32_t	digest[5][16];
+	uint8_t		*data_ptr[16];
 };
 
 struct sha1_lane_data {
@@ -88,23 +88,23 @@ struct sha1_lane_data {
 };
 
 struct sha1_mb_mgr {
-	struct sha1_args_x8 args;
+	struct sha1_args_x16 args;
 
-	uint32_t lens[8];
+	uint32_t lens[16];
 
 	/* each byte is index (0...7) of unused lanes */
 	uint64_t unused_lanes;
 	/* byte 4 is set to FF as a flag */
-	struct sha1_lane_data ldata[8];
+	struct sha1_lane_data ldata[16];
+	uint32_t num_lanes_inuse;
 };
 
 
-#define SHA1_MB_MGR_NUM_LANES_AVX2 8
+#define SHA1_MB_MGR_NUM_LANES_AVX2 16
 
-void sha1_mb_mgr_init_avx2(struct sha1_mb_mgr *state);
-struct job_sha1 *sha1_mb_mgr_submit_avx2(struct sha1_mb_mgr *state,
+void sha1_mb_mgr_init_avx3(struct sha1_mb_mgr *state);
+struct job_sha1 *sha1_mb_mgr_submit_avx3(struct sha1_mb_mgr *state,
 					 struct job_sha1 *job);
-struct job_sha1 *sha1_mb_mgr_flush_avx2(struct sha1_mb_mgr *state);
-struct job_sha1 *sha1_mb_mgr_get_comp_job_avx2(struct sha1_mb_mgr *state);
+struct job_sha1 *sha1_mb_mgr_flush_avx3(struct sha1_mb_mgr *state);
 
 #endif

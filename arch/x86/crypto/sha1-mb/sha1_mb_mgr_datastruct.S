@@ -1,56 +1,28 @@
-/*
- * Header file for multi buffer SHA1 algorithm data structure
- *
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- *  Copyright(c) 2014 Intel Corporation.
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of version 2 of the GNU General Public License as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  Contact Information:
- *      James Guilford <james.guilford@intel.com>
- *	Tim Chen <tim.c.chen@linux.intel.com>
- *
- *  BSD LICENSE
- *
- *  Copyright(c) 2014 Intel Corporation.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    * Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *    * Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in
- *      the documentation and/or other materials provided with the
- *      distribution.
- *    * Neither the name of Intel Corporation nor the names of its
- *      contributors may be used to endorse or promote products derived
- *      from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+########################################################################
+# Copyright 2012 Intel Corporation All Rights Reserved.
+# 
+# The source code contained or described herein and all documents
+# related to the source code ("Material") are owned by Intel Corporation
+# or its suppliers or licensors. Title to the Material remains with
+# Intel Corporation or its suppliers and licensors. The Material may
+# contain trade secrets and proprietary and confidential information of
+# Intel Corporation and its suppliers and licensors, and is protected by
+# worldwide copyright and trade secret laws and treaty provisions. No
+# part of the Material may be used, copied, reproduced, modified,
+# published, uploaded, posted, transmitted, distributed, or disclosed in
+# any way without Intel's prior express written permission.
+# 
+# No license under any patent, copyright, trade secret or other
+# intellectual property right is granted to or conferred upon you by
+# disclosure or delivery of the Materials, either expressly, by
+# implication, inducement, estoppel or otherwise. Any license under such
+# intellectual property rights must be express and approved by Intel in
+# writing.
+# 
+# Unless otherwise agreed by Intel in writing, you may not remove or
+# alter this notice or any other notice embedded in Materials by Intel
+# or Intel's suppliers or licensors in any way.
+########################################################################
 
 # Macros for defining data structures
 
@@ -78,7 +50,7 @@
 # Alternate "struc-like" syntax:
 #	STRUCT job_aes2
 #	RES_Q	.plaintext,	1
-#	RES_Q	.ciphertext,	1
+#	RES_Q	.ciphertext, 	1
 #	RES_DQ	.IV,		1
 #	RES_B	.nested,	_JOB_AES_SIZE, _JOB_AES_ALIGN
 #	RES_U	.union,		size1, align1, \
@@ -101,26 +73,26 @@
 # RES_DQ   16
 # RES_Y    32
 # RES_Z    64
-#
+# 
 # RES_U defines a union. It's arguments are a name and two or more
 # pairs of "size, alignment"
 #
 # The two assigns are only needed if this structure is being nested
 # within another. Even if the assigns are not done, one can still use
 # STRUCT_NAME_size as the size of the structure.
-#
+# 
 # Note that for nesting, you still need to assign to STRUCT_NAME_size.
-#
+# 
 # The differences between this and using "struc" directly are that each
 # type is implicitly aligned to its natural length (although this can be
 # over-ridden with an explicit third parameter), and that the structure
 # is padded at the end to its overall alignment.
-#
+# 
 
 #########################################################################
 
-#ifndef _SHA1_MB_MGR_DATASTRUCT_ASM_
-#define _SHA1_MB_MGR_DATASTRUCT_ASM_
+#ifndef _DATASTRUCT_ASM_
+#define _DATASTRUCT_ASM_
 
 ## START_FIELDS
 .macro START_FIELDS
@@ -145,7 +117,7 @@
 
 ########################################################################
 
-.macro STRUCT p1
+.macro STRUCT p1 
 START_FIELDS
 .struc \p1
 .endm
@@ -161,7 +133,7 @@ START_FIELDS
 .endm
 
 ## RES_int name size align
-.macro RES_int p1 p2 p3
+.macro RES_int p1 p2 p3 
  name = \p1
  size = \p2
  align = .\p3
@@ -178,38 +150,38 @@ START_FIELDS
 
 
 # macro RES_B name, size [, align]
-.macro RES_B _name, _size, _align=1
-RES_int _name _size _align
+.macro RES_B _name, _size, _align=1 
+RES_int _name _size _align 
 .endm
 
 # macro RES_W name, size [, align]
-.macro RES_W _name, _size, _align=2
-RES_int _name 2*(_size) _align
+.macro RES_W _name, _size, _align=2 
+RES_int _name 2*(_size) _align 
 .endm
 
 # macro RES_D name, size [, align]
-.macro RES_D _name, _size, _align=4
-RES_int _name 4*(_size) _align
+.macro RES_D _name, _size, _align=4 
+RES_int _name 4*(_size) _align 
 .endm
 
 # macro RES_Q name, size [, align]
-.macro RES_Q _name, _size, _align=8
-RES_int _name 8*(_size) _align
+.macro RES_Q _name, _size, _align=8 
+RES_int _name 8*(_size) _align 
 .endm
 
 # macro RES_DQ name, size [, align]
-.macro RES_DQ _name, _size, _align=16
-RES_int _name 16*(_size) _align
+.macro RES_DQ _name, _size, _align=16 
+RES_int _name 16*(_size) _align 
 .endm
 
 # macro RES_Y name, size [, align]
-.macro RES_Y _name, _size, _align=32
-RES_int _name 32*(_size) _align
+.macro RES_Y _name, _size, _align=32 
+RES_int _name 32*(_size) _align 
 .endm
 
 # macro RES_Z name, size [, align]
-.macro RES_Z _name, _size, _align=64
-RES_int _name 64*(_size) _align
+.macro RES_Z _name, _size, _align=64 
+RES_int _name 64*(_size) _align 
 .endm
 
 
@@ -228,38 +200,50 @@ START_FIELDS    # LANE_DATA
 FIELD   _job_in_lane,   8,      8       # pointer to job object
 END_FIELDS
 
-_LANE_DATA_size = _FIELD_OFFSET
-_LANE_DATA_align = _STRUCT_ALIGN
+ _LANE_DATA_size = _FIELD_OFFSET
+ _LANE_DATA_align = _STRUCT_ALIGN
 
 ########################################################################
 
-START_FIELDS    # SHA1_ARGS_X8
+START_FIELDS    # SHA1_ARGS_X16
 ###     name            size    align
-FIELD   _digest,        4*5*8,  16      # transposed digest
-FIELD   _data_ptr,      8*8,    8       # array of pointers to data
+FIELD   _digest,        4*5*16,  16      # transposed digest
+FIELD   _data_ptr,      8*16,    8       # array of pointers to data
 END_FIELDS
 
-_SHA1_ARGS_X4_size =     _FIELD_OFFSET
-_SHA1_ARGS_X4_align =    _STRUCT_ALIGN
-_SHA1_ARGS_X8_size =     _FIELD_OFFSET
-_SHA1_ARGS_X8_align =    _STRUCT_ALIGN
+ _SHA1_ARGS_X4_size =     _FIELD_OFFSET
+ _SHA1_ARGS_X4_align =    _STRUCT_ALIGN
+ _SHA1_ARGS_X8_size =     _FIELD_OFFSET
+ _SHA1_ARGS_X8_align =    _STRUCT_ALIGN
+ _SHA1_ARGS_X16_size	=	_FIELD_OFFSET
+ _SHA1_ARGS_X16_align	=	_STRUCT_ALIGN
 
 ########################################################################
 
 START_FIELDS    # MB_MGR
 ###     name            size    align
 FIELD   _args,          _SHA1_ARGS_X4_size, _SHA1_ARGS_X4_align
-FIELD   _lens,          4*8,    8
+FIELD   _lens,          4*16,    8
 FIELD   _unused_lanes,  8,      8
-FIELD   _ldata,         _LANE_DATA_size*8, _LANE_DATA_align
+FIELD   _ldata,         _LANE_DATA_size*16, _LANE_DATA_align
+FIELD	_num_lanes_inuse,4,	4
 END_FIELDS
 
-_MB_MGR_size =   _FIELD_OFFSET
-_MB_MGR_align =  _STRUCT_ALIGN
+ _MB_MGR_size =   _FIELD_OFFSET
+ _MB_MGR_align =  _STRUCT_ALIGN
 
 _args_digest    =     _args + _digest
 _args_data_ptr  =     _args + _data_ptr
 
+########################################################################
+# Define Stack Layout
+START_FIELDS
+###     name            size    align
+FIELD   _GPR_SAVE,      8*8,    8
+FIELD   _ZMM_SAVE,      10*64,  64
+FIELD   _rsp,           8,      8
+
+STACK_SPACE  =   _FIELD_OFFSET
 
 ########################################################################
 #### Define constants
@@ -283,5 +267,5 @@ FIELD   _status,                        4,      4
 FIELD   _user_data,                     8,      8
 END_FIELDS
 
-_JOB_SHA1_size =  _FIELD_OFFSET
-_JOB_SHA1_align = _STRUCT_ALIGN
+ _JOB_SHA1_size =  _FIELD_OFFSET
+ _JOB_SHA1_align = _STRUCT_ALIGN

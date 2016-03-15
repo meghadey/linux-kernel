@@ -104,8 +104,6 @@ static asmlinkage struct job_sha1* (*sha1_job_mgr_submit)
 						struct job_sha1 *job);
 static asmlinkage struct job_sha1* (*sha1_job_mgr_flush)
 						(struct sha1_mb_mgr *state);
-static asmlinkage struct job_sha1* (*sha1_job_mgr_get_comp_job)
-						(struct sha1_mb_mgr *state);
 
 inline void sha1_init_digest(uint32_t *digest)
 {
@@ -216,7 +214,7 @@ static struct sha1_hash_ctx *sha1_ctx_mgr_resubmit(struct sha1_ctx_mgr *mgr,
 
 	return NULL;
 }
-
+#if 0
 static struct sha1_hash_ctx *sha1_ctx_mgr_get_comp_ctx(struct sha1_ctx_mgr *mgr)
 {
 	/*
@@ -233,7 +231,7 @@ static struct sha1_hash_ctx *sha1_ctx_mgr_get_comp_ctx(struct sha1_ctx_mgr *mgr)
 	ctx = (struct sha1_hash_ctx *) sha1_job_mgr_get_comp_job(&mgr->mgr);
 	return sha1_ctx_mgr_resubmit(mgr, ctx);
 }
-
+#endif
 static void sha1_ctx_mgr_init(struct sha1_ctx_mgr *mgr)
 {
 	sha1_job_mgr_init(&mgr->mgr);
@@ -447,7 +445,7 @@ out:
 	*ret_rctx = rctx;
 	return err;
 }
-
+#if 0
 static int sha_complete_job(struct mcryptd_hash_request_ctx *rctx,
 			    struct mcryptd_alg_cstate *cstate,
 			    int err)
@@ -494,7 +492,7 @@ static int sha_complete_job(struct mcryptd_hash_request_ctx *rctx,
 
 	return 0;
 }
-
+#endif
 static void sha1_mb_add_list(struct mcryptd_hash_request_ctx *rctx,
 			     struct mcryptd_alg_cstate *cstate)
 {
@@ -571,7 +569,6 @@ static int sha1_mb_update(struct shash_desc *desc, const u8 *data,
 	if (!rctx)
 		return -EINPROGRESS;
 done:
-	sha_complete_job(rctx, cstate, ret);
 	return ret;
 }
 
@@ -634,7 +631,6 @@ static int sha1_mb_finup(struct shash_desc *desc, const u8 *data,
 	if (!rctx)
 		return -EINPROGRESS;
 done:
-	sha_complete_job(rctx, cstate, ret);
 	return ret;
 }
 
@@ -685,7 +681,6 @@ static int sha1_mb_final(struct shash_desc *desc, u8 *out)
 	if (!rctx)
 		return -EINPROGRESS;
 done:
-	sha_complete_job(rctx, cstate, ret);
 	return ret;
 }
 
@@ -917,7 +912,6 @@ static unsigned long sha1_mb_flusher(struct mcryptd_alg_cstate *cstate)
 		}
 		rctx = cast_hash_to_mcryptd_ctx(sha_ctx);
 		sha_finish_walk(&rctx, cstate, true);
-		sha_complete_job(rctx, cstate, 0);
 	}
 
 	if (!list_empty(&cstate->work_list)) {
@@ -938,17 +932,16 @@ static int __init sha1_mb_mod_init(void)
 	struct mcryptd_alg_cstate *cpu_state;
 
 	/* check for dependent cpu features */
-	if (!boot_cpu_has(X86_FEATURE_AVX2) ||
+	if (!boot_cpu_has(X86_FEATURE_AVX512F) ||
 	    !boot_cpu_has(X86_FEATURE_BMI2))
 		return -ENODEV;
 
 	/* initialize multibuffer structures */
 	sha1_mb_alg_state.alg_cstate = alloc_percpu(struct mcryptd_alg_cstate);
 
-	sha1_job_mgr_init = sha1_mb_mgr_init_avx2;
-	sha1_job_mgr_submit = sha1_mb_mgr_submit_avx2;
-	sha1_job_mgr_flush = sha1_mb_mgr_flush_avx2;
-	sha1_job_mgr_get_comp_job = sha1_mb_mgr_get_comp_job_avx2;
+	sha1_job_mgr_init = sha1_mb_mgr_init_avx3;
+	sha1_job_mgr_submit = sha1_mb_mgr_submit_avx3;
+	sha1_job_mgr_flush = sha1_mb_mgr_flush_avx3;
 
 	if (!sha1_mb_alg_state.alg_cstate)
 		return -ENOMEM;
